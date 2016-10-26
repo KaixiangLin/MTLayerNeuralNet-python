@@ -26,8 +26,9 @@ class NeuralNet:
         for i in range(n_layer-1):
             self.model["w"+str(i+2)] = np.random.randn(n_nodes[i+1],n_nodes[i]) / np.sqrt(n_nodes[i]) # initialization
 
+        self.hidden["h1"] = np.zeros((self.n_feat, 1))
         for i in range(n_layer):
-            self.hidden["h"+str(i+1)] = np.zeros((n_nodes[i],1))
+            self.hidden["h"+str(i+2)] = np.zeros((n_nodes[i], 1))
 
         self.grad_model = {k: np.zeros_like(v) for k, v in self.model.iteritems()}
 
@@ -62,15 +63,16 @@ class NeuralNet:
         :return:
         '''
 
-        self.hidden["h0"] = x
-        for i in range(self.n_layer-1):
-            i += 1
-            self.z["h" + str(i)] = np.dot(self.model["w"+ str(i)], self.hidden["h" + str(i-1)])
+        self.hidden["h1"] = x  # output of activation function
+        self.z["h1"] = x  # input of activation function
+        for i in range(2, self.n_layer+1):
+            self.z["h" + str(i)] = np.dot(self.model["w" + str(i-1)], self.hidden["h" + str(i-1)])
             self.hidden["h" + str(i)] = self.activation(self.z["h" + str(i)])
 
-        self.hidden["h"+str(self.n_layer)] = np.dot(self.model["w"+ str(self.n_layer)], self.hidden["h" + str(self.n_layer-1)])
+        self.hidden["h"+str(self.n_layer+1)] = np.dot(self.model["w" + str(self.n_layer)], self.hidden["h" + str(self.n_layer)])
+        self.z["h"+str(self.n_layer+1)] = self.hidden["h"+str(self.n_layer+1)]
 
-        return self.hidden["h"+str(self.n_layer)]  # return last hidden layer
+        return self.hidden["h"+str(self.n_layer+1)]  # return last hidden layer
 
 
     def backprop(self,err):
@@ -78,15 +80,17 @@ class NeuralNet:
         :return:
         '''
 
-        # last layer gradient
-        self.grad_model["w" + str(self.n_layer)] = np.multiply(err, self.hidden[self.n_layer - 1])
+
+        # self.grad_model["w" + str(self.n_layer)] = np.multiply(err, self.hidden["h"+str(self.n_layer+1)])
 
         delta = {}
+        # last layer gradient delta (error)
         delta[str(self.n_layer+1)] = err # delta_4
 
         for ii in range(1, self.n_layer+1)[::-1]:
-            delta_w = np.dot(delta[str(ii+1)], self.model[str(ii)])  # ii  = 2
-            delta[str(ii)] = np.multiply(delta_w, nnu.grad_activation(self.func_num, self.z["h" + str(ii)])) # delta_3 3x1
+
+            delta_w = np.dot(delta[str(ii+1)], self.model["w"+str(ii)])  # ii  = 2
+            delta[str(ii)] = np.multiply(delta_w, nnu.grad_activation(self.func_num, self.z["h" + str(ii)]))   # delta_3 3x1
             self.grad_model["w"+str(ii)] = np.outer(delta[str(ii+1)], self.hidden["h"+str(ii)].T)
 
         return self.grad_model
