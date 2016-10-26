@@ -10,7 +10,8 @@
 .DS_Store
 */temp/*
 *.pyc
-
+*.iml
+.idea
 ## Intermediate documents:
 *.dvi
 *-converted-to.*
@@ -18,6 +19,7 @@
 # *.ps
 # *.eps
 # *.pdf
+
 
 ## Bibliography auxiliary files (bibtex/biblatex/biber):
 *.bbl
