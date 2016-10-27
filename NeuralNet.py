@@ -53,7 +53,7 @@ class NeuralNet:
 
         loss_func = np.linalg.norm(y_pred-y_true)
 
-        return loss_func ** 2
+        return 0.5 * loss_func ** 2
 
 
     def feedforward(self, x):

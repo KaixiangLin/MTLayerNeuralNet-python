@@ -9,7 +9,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 def evaluate_loss(batch_x, batch_y, nn_model):
-    ''' evaluate the loss value over the batch 
+    ''' evaluate the loss value over the batch
     :param batch_x:
     :param batch_y:
     :param nn_model:
@@ -21,24 +21,23 @@ def evaluate_loss(batch_x, batch_y, nn_model):
         y_pred = nn_model.feedforward(batch_x[ii, :].T)
         temp_loss += nn_model.loss_function_l2(y_pred, batch_y[ii])
 
-    return temp_loss
+    return temp_loss * 0.5
 
 
 def train(batch_x, batch_y, nn_model):
-    ''' Apply one step gradient descent
-
+    """ Apply one step gradient descent
     :param batch_x:
     :param batch_y:
     :param nn_model:
     :return:
-    '''
+    """
 
     batch_size = len(batch_y)
 
     delta_grad = {k: np.zeros_like(v) for k, v in nn_model.model.iteritems()}
 
     for ii in range(batch_size):
-        y_pred = nn_model.feedforward(batch_x[ii, :].T)
+        y_pred = nn_model.feedforward(batch_x[ii].T)
         # obj_val = nn_model.loss_function_l2(y_pred, batch_y[ii])
         y_true = batch_y[ii]
         err = y_pred - y_true
@@ -72,7 +71,8 @@ def run_train(features, labels):
 
 
 def main():
-    '''Main function'''
+    ''' Main function
+    '''
 
     # read data
     fname = "../problem-4.mat"
