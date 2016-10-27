@@ -18,10 +18,10 @@ def evaluate_loss(batch_x, batch_y, nn_model):
     batch_size = len(batch_y)
     temp_loss = 0
     for ii in range(batch_size):
-        y_pred = nn_model.feedforward(batch_x[ii, :].T)
+        y_pred = nn_model.feedforward(batch_x[ii].T)
         temp_loss += nn_model.loss_function_l2(y_pred, batch_y[ii])
 
-    return temp_loss * 0.5
+    return temp_loss
 
 
 def train(batch_x, batch_y, nn_model):
