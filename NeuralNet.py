@@ -42,20 +42,6 @@ class NeuralNet:
         return h
 
 
-
-    def loss_function_l2(self, y_pred, y_true):
-        '''
-
-        :param y_pred: the prediction of neural network
-        :param y_ture: the true label
-        :return:
-        '''
-
-        loss_func = np.linalg.norm(y_pred-y_true)
-
-        return 0.5 * loss_func ** 2
-
-
     def feedforward(self, x):
         ''' get the output value of multi-neural network
 
@@ -96,9 +82,27 @@ class NeuralNet:
         return self.grad_model
 
 
+    def loss_function_l2(self, y_pred, y_true):
+        '''
 
+        :param y_pred: the prediction of neural network
+        :param y_ture: the true label
+        :return:
+        '''
 
+        loss_func = np.linalg.norm(y_pred-y_true)
 
+        return 0.5 * loss_func ** 2
 
+    def loss_function_l2_grad(self, y_pred, y_true):
+        """ return the gradient of loss function with respect to the y_pred
+
+        :param y_pred:
+        :param y_true:
+        :return:
+        """
+        err = y_pred - y_true
+
+        return err
 
 

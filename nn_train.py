@@ -40,7 +40,7 @@ def train(batch_x, batch_y, nn_model):
         y_pred = nn_model.feedforward(batch_x[ii].T)
         # obj_val = nn_model.loss_function_l2(y_pred, batch_y[ii])
         y_true = batch_y[ii]
-        err = y_pred - y_true
+        err = nn_model.loss_function_l2_grad(y_pred, y_true)
         grad_delta = nn_model.backprop(err).iteritems()
         for k, v in grad_delta:
             delta_grad[k] += v
@@ -75,11 +75,8 @@ def main():
     '''
 
     # read data
-    fname = FLAGS.inputdata_dir + FLAGS.inputdataname
-    mat_contents = sio.loadmat(fname)
-
-    dataset_tuple = tuple([mat_contents['x'], mat_contents['y']])
-    features, labels = dataset_tuple
+    features = np.random.randn(FLAGS.batch_size, FLAGS.n_feat)
+    labels = np.random.randn(FLAGS.batch_size, FLAGS.n_nodes[-1])
 
     run_train(features, labels)
 

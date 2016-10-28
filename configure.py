@@ -14,7 +14,8 @@ class myFLAGS:
 
         self.learning_rate = 1e-3
         self.max_iteration = 100
-        self.func_num = 1
+        self.func_num = 2
+        self.batch_size = 100
 
         self.inputdata_dir = "../"
         self.inputdataname = "problem-4.mat"

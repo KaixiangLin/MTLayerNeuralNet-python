@@ -115,7 +115,7 @@ def gradfunc(x0, X, y, nn_model):
     for ii in range(batch_size):
         y_pred = nn_model.feedforward(X[ii].T)
         y_true = y[ii]
-        err = y_pred - y_true
+        err = nn_model.loss_function_l2_grad(y_pred, y_true)
         grad_delta = nn_model.backprop(err)
         w_temp = dict_to_nparray(grad_delta)
         w_new += w_temp
