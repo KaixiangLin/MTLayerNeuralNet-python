@@ -75,7 +75,7 @@ def main():
     '''
 
     # read data
-    fname = "../problem-4.mat"
+    fname = FLAGS.inputdata_dir + FLAGS.inputdataname
     mat_contents = sio.loadmat(fname)
 
     dataset_tuple = tuple([mat_contents['x'], mat_contents['y']])

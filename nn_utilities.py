@@ -8,7 +8,7 @@ def sigmoid(x):
     return 1 / (1 + np.exp(-x))
 
 def tanh(x):
-    return np.tanh((0, np.pi*1j, np.pi*1j/2))
+    return np.tanh(x)
 
 def activation_funcs(func_num, x):
     """ @:param func_num: choose different type of activate functions
@@ -17,11 +17,12 @@ def activation_funcs(func_num, x):
     output = 0
 
     if func_num == 1:
-        output = x[x < 0] = 0
+        output = np.copy(x)
+        output[output < 0] = 0
     elif func_num == 2:
         output = sigmoid(x)
     elif func_num == 3:
-        output = np.tanh(x)
+        output = tanh(x)
     else:
         print("ERROR WRONG Activation function")
         pass
@@ -32,7 +33,7 @@ def grad_activation(func_num, x):
 
     gradient = 0
     if func_num == 1:
-        gradient = x
+        gradient = np.copy(x)
         gradient[gradient<=0] = 0
         gradient[gradient>0] = 1
 

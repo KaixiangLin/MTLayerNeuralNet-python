@@ -130,7 +130,7 @@ def run_main(features, labels):
     n_feat = FLAGS.n_feat
     n_nodes = FLAGS.n_nodes
 
-    nn_model = nn.NeuralNet(n_layer, n_nodes, n_feat)
+    nn_model = nn.NeuralNet(n_layer, n_nodes, n_feat, FLAGS.func_num)
     nn_train.train(features, labels, nn_model)
 
     w0 = dict_to_nparray(nn_model.model)
