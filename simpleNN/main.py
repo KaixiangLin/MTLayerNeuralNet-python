@@ -52,22 +52,10 @@ def run_main(datatuple):
     n_feat = FLAGS.n_feat
     n_nodes = FLAGS.n_nodes
     nn_model = NeuralNet(n_layer, n_nodes, n_feat, FLAGS.func_num)
-    NesterovAcceleratedGrad(train_x, train_y, nn_model)
+    nn_model = StochasticGradientDescent(datatuple, nn_model)
 
-    # nn_model = NeuralNet(n_layer, n_nodes, n_feat)
-    # optimizer = pu.Optimizers(FLAGS.Optimizer)
-    #
-    # loss_val = []
-    # for i in range(max_iteration):
-    #     batch_x, batch_y = nnu.batch_data(train_x, train_y, FLAGS.batch_size)
-    #
-    #     nn_model = optimizer(batch_x, batch_y, nn_model)
-    #     if i % 100 == 0:
-    #         print "step ", i, " training acc: ", nnt.evaluate_accuracy(train_x, train_y, nn_model)
-    #         loss_val.append(nnt.evaluate_loss(train_x, train_y, nn_model))
-    #
-    # nnu.plot_list(loss_val, "./figs/" + FLAGS.Optimizer + "_objvalue.png")
-    # print "validation accuracy: ", nnt.evaluate_accuracy(valid_x, valid_y, nn_model)
+    print "test accuracy: ", nnt.evaluate_accuracy(test_x, test_y, nn_model)
+
 
 
 

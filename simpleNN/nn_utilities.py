@@ -5,6 +5,8 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 import math
+import cPickle as pickle
+
 
 
 def sigmoid(x):
@@ -21,7 +23,7 @@ def activation_funcs(func_num, x):
 
     if func_num == 1:
         output = np.copy(x)
-        output[output < 0] = 0
+        output = output * (output > 0)
     elif func_num == 2:
         output = sigmoid(x)
     elif func_num == 3:
@@ -37,8 +39,8 @@ def grad_activation(func_num, x):
     gradient = 0
     if func_num == 1:
         gradient = np.copy(x)
-        gradient[gradient<=0] = 0
-        gradient[gradient>0] = 1
+        gradient[x<0] = 0
+        gradient[x>=0] = 1
 
     elif func_num == 2:
         gradient = np.multiply(sigmoid(x), 1 - sigmoid(x))
@@ -159,6 +161,29 @@ def batch_data(x, y, batch_size):
     batch_x = x[batch_index]
     batch_y = y[batch_index]
     return batch_x, batch_y
+
+def save_model(nn_model, filename):
+    """ Save model to the file
+
+    :param nn_model:
+    :param filename:
+    :return:
+    """
+
+    with open(filename, "wb") as f:
+        pickle.dump(nn_model, f, pickle.HIGHEST_PROTOCOL)
+
+def load_model(filename):
+    """ Load network model from file
+
+    :param filename:
+    :return:
+    """
+    with open(filename, "rb") as f:
+        nn_model = pickle.load(f)
+
+    return nn_model
+
 
 def plot_list(loss_val, figname):
     fig = plt.figure(1)

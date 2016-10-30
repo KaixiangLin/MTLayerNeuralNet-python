@@ -66,22 +66,26 @@ def compute_gradient(batch_x, batch_y, nn_model):
 
 
 
-def StochasticGradientDescent(batch_x, batch_y, nn_model):
+def StochasticGradientDescent(datatuple, nn_model):
     """  gradient descent over the batch features
 
     :param features:
     :param labels:
     :return:
     """
+    train_x, train_y, valid_x, valid_y, _, _ = datatuple
+    loss_val = []
+    for i in range(FLAGS.max_iteration):
+        batch_x, batch_y = nnu.batch_data(train_x, train_y, FLAGS.batch_size)
 
-    #
-    # loss_val = []
-    # for i in range(max_iteration):
-    # batch_x, batch_y = nnu.batch_data(features, labels, FLAGS.batch_size)
-    delta_grad = compute_gradient(batch_x, batch_y, nn_model)
+        delta_grad = compute_gradient(batch_x, batch_y, nn_model)
+        opt.GradientDescentOptimizer(nn_model, delta_grad, FLAGS.learning_rate )
 
-    for k, v in nn_model.model.iteritems():
-        nn_model.model[k] -= FLAGS.learning_rate * delta_grad[k]
+        if i % 100 == 0:
+            print "step ", i, " training acc: ", evaluate_accuracy(train_x, train_y, nn_model)
+            loss_val.append(evaluate_loss(train_x, train_y, nn_model))
+
+    nnu.plot_list(loss_val, "../figs/SGD_objvalue.png")
 
     return nn_model
 
@@ -116,12 +120,13 @@ def NesterovAcceleratedGrad(features, labels, nn_model, alpha=FLAGS.Nesterov_alp
         cumulative_grad = nnu.dict_add(cumulative_grad, delta_grad)  # vt = alpha vt-1 - beta * g
 
         nn_model.model = nnu.dict_add(nn_model.model, cumulative_grad)
-        if i % 100 == 0:
+        if i % FLAGS.record_persteps == 0:
             print "step ", i, " training acc: ", evaluate_accuracy(features, labels, nn_model)
             loss_val.append(evaluate_loss(features, labels, nn_model))
+            nnu.save_model(nn_model, FLAGS.model_dir + "Nesterovmodel_"+str(i))
 
     loss_val.append(evaluate_loss(features, labels, nn_model))
-    nnu.plot_list(loss_val, "./figs/Nesterov_objvalue.png")
+    nnu.plot_list(loss_val, FLAGS.fig_dir + "Nesterov_objvalue.png")
     return nn_model
 
 def AdamGrad(features, labels):
@@ -165,7 +170,7 @@ def AdamGrad(features, labels):
 
         loss_val.append(evaluate_loss(features, labels, nn_model))
 
-    nnu.plot_list(loss_val, "./figs/Adam_objvalue.png")
+    nnu.plot_list(loss_val, FLAGS.fig_dir + "Adam_objvalue.png")
     # print(loss_val[-1])
 
 
@@ -214,7 +219,7 @@ def Adamdelta(features, labels, gamma):
 
         loss_val.append(evaluate_loss(features, labels, nn_model))
 
-    nnu.plot_list(loss_val, "./figs/Adamdelta_objvalue.png")
+    nnu.plot_list(loss_val, FLAGS.fig_dir + "Adamdelta_objvalue.png")
     # print(loss_val[-1])
 
 

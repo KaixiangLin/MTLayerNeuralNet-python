@@ -62,6 +62,7 @@ def gradientCheck(gradfunc, objfunc, x0, X, y,  num_checks, nn_model):
     """
     epsilon = 1e-7
     sum_error = 0
+    count  = 0
     for ii in range(num_checks):
         delta = 0
 
@@ -78,10 +79,16 @@ def gradientCheck(gradfunc, objfunc, x0, X, y,  num_checks, nn_model):
 
         g_est = (f1 - f2)/(2 * delta)
 
-        error = abs(g[J] / g_est)
+        if g_est != 0:
+            error = abs(g[J] / g_est)
+        else:
+            error = 0
+            count += 1
 
-        print '% 5d  % 6d % 15g % 15f % 15f\n' %(ii, J, error, g[J], g_est)
+        print '% 5d  % 6d %g %f %f\n' %(ii, J, error, g[J], g_est)
         sum_error += error
+
+    print count
     return sum_error
 
 def objfunc(x1, X, y, nn_model):
@@ -131,7 +138,8 @@ def run_main(features, labels):
     n_nodes = FLAGS.n_nodes
 
     nn_model = nn.NeuralNet(n_layer, n_nodes, n_feat, FLAGS.func_num)
-    nn_train.train(features, labels, nn_model)
+    # datatuple = tuple([features, labels, [], [], [], []])
+    # nn_train.StochasticGradientDescent(datatuple, nn_model)
 
     w0 = dict_to_nparray(nn_model.model)
 

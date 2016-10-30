@@ -24,7 +24,7 @@ class NeuralNet:
         #  todo didn't consider batch size, culmulate the batch size
         self.model["w1"] = np.random.randn(n_nodes[0], n_feat) / np.sqrt(math.sqrt(float(n_feat)))
         for i in range(n_layer-1):
-            self.model["w"+str(i+2)] = np.random.randn(n_nodes[i+1],n_nodes[i]) / np.sqrt(n_nodes[i]) # initialization
+            self.model["w"+str(i+2)] = np.random.randn(n_nodes[i+1], n_nodes[i]) / np.sqrt(n_nodes[i]) # initialization
 
         self.hidden["h1"] = np.zeros((self.n_feat, 1))
         for i in range(n_layer):
