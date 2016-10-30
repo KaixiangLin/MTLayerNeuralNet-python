@@ -1,5 +1,8 @@
 #__author__ = 'linkaixiang'
 
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
 import numpy as np
 import math
 
@@ -46,3 +49,119 @@ def grad_activation(func_num, x):
         print("ERROR WRONG GRADIENT")
 
     return gradient
+
+
+def dict_to_nparray(grad_dictionary, n_layers):
+    """ Convert dictionary to a numpy array checked
+
+    :param grad_dictionary:
+    :param n_nodes:
+    :return:
+    """
+
+    x = []
+    for ii in range(n_layers):
+        key = "w" + str(ii + 1)
+        temp_v = grad_dictionary[key].flatten()
+        x = np.concatenate((x, temp_v), axis=0)
+
+    return x
+
+def nparray_to_dictionary(x, n_feat, n_nodes, n_layers):
+    """ Convert a numpy array to a dictionary, checked
+
+    :param x:
+    :param n_feat: input features of network, first layer hidden nodes
+    :param n_nodes: number of nodes
+    :param n_layers: excluding first layers
+    :return:
+    """
+    start_point = 0
+    endpoint = 0
+    grad_dictionary = {}
+
+    for ii in range(n_layers):
+        if ii == 0:
+            endpoint += n_feat * n_nodes[0]
+        else:
+            endpoint += n_nodes[ii] * n_nodes[ii-1]
+
+        xtemp = x[start_point:endpoint]
+
+        if ii == 0:
+            grad_dictionary["w" + str(ii + 1)] = xtemp.reshape(n_nodes[0], n_feat)
+        else:
+            grad_dictionary["w" + str(ii + 1)] = xtemp.reshape(n_nodes[ii], n_nodes[ii-1])
+
+        start_point = endpoint
+
+    return grad_dictionary
+
+def dict_add(d1, d2):
+    """ add two dictionary, d_new[key] = d1[key] + d2[key]
+
+    :param d1:
+    :param d2:
+    :return
+    """
+    d_new = {}
+    for k, v in d1.iteritems():
+        d_new[k] = v + d2[k]
+
+    return d_new
+
+def dict_minus(d1, d2):
+    """ minus two dictionary, d_new[key] = d1[key] - d2[key]
+
+    :param d1:
+    :param d2:
+    :return
+    """
+    d_new = {}
+    for k, v in d1.iteritems():
+        d_new[k] = v - d2[k]
+
+    return d_new
+
+
+def dict_mulscala(d1, a):
+    """ multiply scala
+
+    :param d1: dictionary
+    :param a: scala
+    :return:
+    """
+    d_new = {}
+    for k, v in d1.iteritems():
+        d_new[k] = v * a
+    return d_new
+
+def dict_mul(d1, d2):
+    """ element wise multiply two dictionary
+
+    :param d1: dictionary
+    :param a: scala
+    :return:
+    """
+    d_new = {}
+    for k, v in d1.iteritems():
+        d_new[k] = np.multiply(v, d2[k])
+    return d_new
+
+
+def batch_data(x, y, batch_size):
+    '''Input numpy array, and batch size'''
+    data_size = len(x)
+    index = np.random.permutation(data_size)
+    # index = range(data_size)
+    batch_index = index[:batch_size]
+
+    batch_x = x[batch_index]
+    batch_y = y[batch_index]
+    return batch_x, batch_y
+
+def plot_list(loss_val, figname):
+    fig = plt.figure(1)
+    plt.plot(loss_val)
+    plt.savefig(figname)
+    plt.close(fig)

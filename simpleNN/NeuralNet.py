@@ -5,12 +5,12 @@ import nn_utilities as nnu
 import math
 class NeuralNet:
 
-    def __init__(self, n_layer, n_nodes,n_feat, func_num=2):
+    def __init__(self, n_layer, n_nodes,n_feat, func_num):
         ''' @:param: n_layer: number of layers
             @:param: n_nodes: list of numbers e.g. [1,2,3], if it's 3 layers and 1,2,3 hidden nodes respectively
             @:param: n_feat: the number of input features
             @:param: w start from 1
-            @:param: h start from 0, h_0 is input value
+            @:param: h start from 1, h_1 is input value
         '''
         self.n_layer = n_layer
         self.n_nodes = n_nodes
@@ -63,11 +63,8 @@ class NeuralNet:
 
     def backprop(self,err):
         ''' back propagation
-        :return:
+        :return: the gradient with respect to the error.
         '''
-
-
-        # self.grad_model["w" + str(self.n_layer)] = np.multiply(err, self.hidden["h"+str(self.n_layer+1)])
 
         delta = {}
         # last layer gradient delta (error)
