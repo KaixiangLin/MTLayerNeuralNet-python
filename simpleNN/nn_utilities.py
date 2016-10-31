@@ -22,8 +22,8 @@ def activation_funcs(func_num, x):
     output = 0
 
     if func_num == 1:
-        output = np.copy(x)
-        output = output * (output > 0)
+        # output = np.copy(x)
+        output = np.maximum(x, 0)
     elif func_num == 2:
         output = sigmoid(x)
     elif func_num == 3:
@@ -185,8 +185,19 @@ def load_model(filename):
     return nn_model
 
 
-def plot_list(loss_val, figname):
+def plot_list(loss_val, figname, closefig):
     fig = plt.figure(1)
     plt.plot(loss_val)
     plt.savefig(figname)
+    if closefig == 1:
+        plt.close(fig)
+
+def plot_list_acc(train, valid, figname):
+    fig = plt.figure(1)
+    plt.plot(train, 'g--', label='train')
+    plt.plot(valid, 'g^', label='valid')
+    plt.legend(bbox_to_anchor=(0., 1.01, 1., .101), loc=2,
+               ncol=2, mode="expand", borderaxespad=0.)
+    plt.savefig(figname)
     plt.close(fig)
+

@@ -12,6 +12,10 @@ class NeuralNet:
             @:param: w start from 1
             @:param: h start from 1, h_1 is input value
         '''
+
+        self.train_acc = 0
+        self.valid_acc = 0
+
         self.n_layer = n_layer
         self.n_nodes = n_nodes
         self.n_feat = n_feat

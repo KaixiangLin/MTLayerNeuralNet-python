@@ -11,6 +11,8 @@
 */temp/*
 *.pyc
 *.iml
+*results*
+*figs*
 .idea
 ## Intermediate documents:
 *.dvi
