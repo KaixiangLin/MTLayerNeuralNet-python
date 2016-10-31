@@ -11,6 +11,7 @@ import nn_utilities as nnu
 import scipy.io as sio
 import preprocess_utilities as pu
 from shutil import copyfile
+import os
 
 def readdata():
     """
@@ -76,7 +77,13 @@ def run_main(datatuple):
     n_layer = FLAGS.n_layer  # the last layer is the output of network
     n_feat = FLAGS.n_feat
     n_nodes = FLAGS.n_nodes
-    nn_model = NeuralNet(n_layer, n_nodes, n_feat, FLAGS.func_num)
+
+    if os.path.isfile(FLAGS.nnmodel_load_fname):
+        print "load model"
+        nn_model = nnu.load_model(FLAGS.nnmodel_load_fname)
+    else:
+        print "random init model"
+        nn_model = NeuralNet(n_layer, n_nodes, n_feat, FLAGS.func_num)
 
     # save configuration
     configure_name = "configure.py"
