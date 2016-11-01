@@ -19,11 +19,11 @@ class myFLAGS:
 
         '''Network structure parameters'''
         self.n_feat = 784 + 1   # add bias term
-        self.n_nodes = [32, 32, 32, 32, 32, 10]  # h2, h3, h4; where h1 is input x, h4 is output predicted value
+        self.n_nodes = [32, 10]  # h2, h3, h4; where h1 is input x, h4 is output predicted value
         self.n_layer = len(self.n_nodes)
 
         '''Optimizer parameters'''
-        self.Optimizer = 4 #1: SGD 2: "NesterovAcceleratedGrad" 3: AdamGrad 4 Adamdelta
+        self.Optimizer = 1 #1: SGD 2: "NesterovAcceleratedGrad" 3: AdamGrad 4 Adamdelta
         self.learning_rate = 1e-3
         self.Nesterov_alpha = 0.9
         self.adadelta_gamma = 0.9
@@ -43,7 +43,7 @@ class myFLAGS:
         self.batch_size = 128
         self.max_iteration = int(1e+4 + 1) # int(self.data_size * self.num_epoch / self.batch_size)
         self.record_persteps = 1000  # every x steps records the models
-        self.nnmodel_load_fname = "../results/20161101_12-39/Adamdelta_10001"
+        self.nnmodel_load_fname = "../results/20161030_23-11/NA"
         self.mnist_input = "../../data/mnist_splited_bias.npy"
 
     def create_dir(self):

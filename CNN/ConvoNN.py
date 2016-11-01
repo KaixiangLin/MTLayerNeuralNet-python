@@ -47,7 +47,7 @@ class NeuralNet:
 
 
     def feedforward(self, x):
-        ''' get the output value of multi-neural network
+        ''' Define CNN network
 
         :param x: input data
         :return:

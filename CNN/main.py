@@ -27,9 +27,9 @@ def readdata():
     for i in range(train_datasize):
         train_y_new[i][train_y[i][0]] = 1
     train_y = train_y_new
-    train_x = np.array([train_x[ii].flatten() for ii in range(train_datasize)]) # 28*28 -> 1x784
-    train_x = pu.normalize_data(train_x)
-    train_x = np.array([np.append(train_x[ii], np.array([1])) for ii in range(train_datasize)])  # add bias term
+    # train_x = np.array([train_x[ii].flatten() for ii in range(train_datasize)]) # 28*28 -> 1x784
+    # train_x = pu.normalize_data(train_x)
+    # train_x = np.array([np.append(train_x[ii], np.array([1])) for ii in range(train_datasize)])  # add bias term
 
     train_x, train_y, valid_x, valid_y = pu.split_train_valid(train_x, train_y, FLAGS.valid_rate)
 
@@ -43,9 +43,8 @@ def readdata():
         test_y_new[i][test_y[i][0]] = 1
     test_y = test_y_new
 
-    test_x = np.array([test_x[ii].flatten() for ii in range(test_datasize)])
-    test_x = pu.normalize_data(test_x)
-    test_x = np.array([np.append(test_x[ii], np.array([1])) for ii in range(test_datasize)])
+    # test_x = np.array([test_x[ii].flatten() for ii in range(test_datasize)])
+    # test_x = pu.normalize_data(test_x)
 
     return tuple([train_x, train_y, valid_x, valid_y, test_x, test_y])
 
@@ -132,7 +131,7 @@ def main():
     # np.save("../../data/mnist_splited_bias.npy", data_tuple)
     data_tuple = np.load(FLAGS.mnist_input)
     # train_x, train_y, valid_x, valid_y, test_x, test_y = data_tuple
-    # print test_x.shape
+
 
     run_main(data_tuple)
 
