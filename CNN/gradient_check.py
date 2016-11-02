@@ -1,7 +1,7 @@
 import numpy as np
 import scipy.io as sio
 import nn_train
-import NeuralNet as nn
+import ConvoNN as nn
 from configure import FLAGS
 import random
 
@@ -21,8 +21,8 @@ def dict_to_nparray(grad_dictionary):
 
     return x
 
-def nparray_to_dictionary(x, n_feat, n_nodes, n_layers):
-    """ Convert a numpy array to a dictionary, checked
+def nparray_to_dictionary(x, new_dictionary):
+    """ Convert a numpy array to a dictionary, same structure as new_dictionary
 
     :param x:
     :param n_feat: input features of network, first layer hidden nodes
@@ -34,20 +34,26 @@ def nparray_to_dictionary(x, n_feat, n_nodes, n_layers):
     endpoint = 0
     grad_dictionary = {}
 
-    for ii in range(n_layers):
-        if ii == 0:
-            endpoint += n_feat * n_nodes[0]
-        else:
-            endpoint += n_nodes[ii] * n_nodes[ii-1]
-
-        xtemp = x[start_point:endpoint]
-
-        if ii == 0:
-            grad_dictionary["w" + str(ii + 1)] = xtemp.reshape(n_nodes[0], n_feat)
-        else:
-            grad_dictionary["w" + str(ii + 1)] = xtemp.reshape(n_nodes[ii], n_nodes[ii-1])
-
+    for k, v in new_dictionary.iteritems():
+        endpoint = start_point + v.size
+        grad_dictionary[k] = x[start_point:endpoint].reshape(v.shape)
         start_point = endpoint
+
+
+    # for ii in range(n_layers):
+    #     if ii == 0:
+    #         endpoint += n_feat * n_nodes[0]
+    #     else:
+    #         endpoint += n_nodes[ii] * n_nodes[ii-1]
+    #
+    #     xtemp = x[start_point:endpoint]
+    #
+    #     if ii == 0:
+    #         grad_dictionary["w" + str(ii + 1)] = xtemp.reshape(n_nodes[0], n_feat)
+    #     else:
+    #         grad_dictionary["w" + str(ii + 1)] = xtemp.reshape(n_nodes[ii], n_nodes[ii-1])
+    #
+    #     start_point = endpoint
 
     return grad_dictionary
 
@@ -80,8 +86,8 @@ def gradientCheck(gradfunc, objfunc, x0, X, y,  num_checks, nn_model):
 
         g_est = (f1 - f2)/(2 * delta)
 
-        if g[J] != 0:
-            g = gradfunc(x0, X, y, nn_model)
+        # if g[J] != 0:
+        #     g = gradfunc(x0, X, y, nn_model)
 
         if g_est != 0:
             error = abs(g[J] / g_est)
@@ -104,7 +110,7 @@ def objfunc(x1, X, y, nn_model):
     :param nn_model: instance of neural network class
     :return:
     """
-    model_w = nparray_to_dictionary(x1, FLAGS.n_feat, FLAGS.n_nodes, FLAGS.n_layer)
+    model_w = nparray_to_dictionary(x1, nn_model.model)
     nn_model.model = model_w
 
     f = nn_train.evaluate_loss(X, y, nn_model)
@@ -119,7 +125,7 @@ def gradfunc(x0, X, y, nn_model):
     :param y: label corresponding to the input
     :return:
     """
-    w = nparray_to_dictionary(x0, FLAGS.n_feat, FLAGS.n_nodes, FLAGS.n_layer)
+    w = nparray_to_dictionary(x0, nn_model.model)
     nn_model.model = w
     w_new = np.zeros_like(x0)
     batch_size = len(y)
@@ -137,18 +143,18 @@ def gradfunc(x0, X, y, nn_model):
 def run_main(features, labels):
 
     max_iteration = 100
-    n_layer = FLAGS.n_layer  # the last layer is the output of network
-    n_feat = FLAGS.n_feat
-    n_nodes = FLAGS.n_nodes
+    n_layer = 2  # the last layer is the output of network
+    n_feat = 28
+    n_nodes = 2
 
-    nn_model = nn.NeuralNet(n_layer, n_nodes, n_feat, FLAGS.func_num)
+    nn_model = nn.NeuralNet(n_feat, 1)
     # datatuple = tuple([features, labels, [], [], [], []])
     # nn_train.StochasticGradientDescent(datatuple, nn_model)
 
     w0 = dict_to_nparray(nn_model.model)
 
-    print gradientCheck(gradfunc, objfunc, w0, [features[1]], [labels[1]], max_iteration, nn_model)
-    print features[1], labels[1]
+    print gradientCheck(gradfunc, objfunc, w0, [features], [labels], max_iteration, nn_model)
+    # print features, labels
 
 def main():
 
@@ -158,11 +164,11 @@ def main():
     #
     # dataset_tuple = tuple([mat_contents['x'], mat_contents['y']])
     # features, labels = dataset_tuple
-    features = np.random.randn(100, FLAGS.n_feat)
+    features = np.random.randn(28, 28)
     # labels = np.array([random.randint(0, 1) for ii in range(100 * FLAGS.n_nodes[-1])]).reshape(100, FLAGS.n_nodes[-1])
-    labels = abs(np.random.randn(100, FLAGS.n_nodes[-1]))
-    labels = labels/labels.sum(axis=1)[:,None]  # todo this must be a valid probability distribution
-
+    labels = abs(np.random.randn(10, 1))
+    labels = labels/sum(labels)  # todo this must be a valid probability distribution
+    print features.shape, labels.shape
     run_main(features, labels)
 
 if __name__ == "__main__":

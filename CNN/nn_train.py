@@ -1,6 +1,5 @@
 # __author__ = 'linkaixiang'
 import scipy.io as sio
-from NeuralNet import NeuralNet
 import nn_optimizer as opt
 import numpy as np
 from configure import FLAGS

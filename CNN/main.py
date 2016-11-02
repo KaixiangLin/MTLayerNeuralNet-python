@@ -6,7 +6,7 @@ from nn_train import NesterovAcceleratedGrad
 from nn_train import StochasticGradientDescent
 from nn_train import AdamGrad
 from nn_train import Adamdelta
-from NeuralNet import NeuralNet
+from ConvoNN import NeuralNet
 import nn_utilities as nnu
 import scipy.io as sio
 import preprocess_utilities as pu
@@ -128,12 +128,12 @@ def main():
 
     # test()
     # data_tuple = readdata()
-    # np.save("../../data/mnist_splited_bias.npy", data_tuple)
+    # np.save("../../data/mnist_split_images.npy", data_tuple)
     data_tuple = np.load(FLAGS.mnist_input)
-    # train_x, train_y, valid_x, valid_y, test_x, test_y = data_tuple
+    train_x, train_y, valid_x, valid_y, test_x, test_y = data_tuple
 
 
-    run_main(data_tuple)
+    # run_main(data_tuple)
 
 
     # hidden_layer_crossvalidation(data_tuple)

@@ -6,8 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import math
 import cPickle as pickle
-
-
+from scipy import signal
 
 def sigmoid(x):
     return 1 / (1 + np.exp(-x))
@@ -64,6 +63,47 @@ def grad_activation(func_num, x):
         print("ERROR WRONG GRADIENT")
 
     return gradient
+
+def conv(image, filter):
+    """
+    :param image: 2 dimensional np array NxN
+    :param filter: 2 dimensional np array MxM
+    :return: (N-M+1)x(N-M+1)
+    """
+    h = signal.convolve(image, filter, 'valid')
+    return h
+
+def convolution_tensor(image, filtertensor):
+    """
+    :param image:  2 dimensional np array NxN
+    :param filtertensor:  2 dimensional np array MxMx channels
+    :return:
+    """
+    M, _, C = filtertensor.shape
+    N, _ = image.shape
+
+    L = N - M + 1
+    H = np.zeros((L, L, C))
+    for ii in range(C):
+        H[:, :, ii] = conv(image, filtertensor[:, :, ii])
+
+    return H
+
+def convolution_gradient(delta, image):
+    """
+    :param delta: 2 dimensional np array NxN, error,
+    :param image: 2 dimensional np array NxN, hidden
+    :return:
+    """
+    N1, N2 = image.shape # N1 == N2
+    r1, r2 = delta.shape # r1 == r2
+    M = N1 + 1 - r1 # filter size
+
+    grad_filter = np.zeros((M, M))
+    for a in range(M):
+        for b in range(M):
+            grad_filter[a, b] += np.sum(image[a:a+r1, b:b+r1] * delta)
+    return grad_filter
 
 
 def dict_to_nparray(grad_dictionary, n_layers):

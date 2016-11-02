@@ -44,7 +44,7 @@ class myFLAGS:
         self.max_iteration = int(1e+4 + 1) # int(self.data_size * self.num_epoch / self.batch_size)
         self.record_persteps = 1000  # every x steps records the models
         self.nnmodel_load_fname = "../results/20161030_23-11/NA"
-        self.mnist_input = "../../data/mnist_splited_bias.npy"
+        self.mnist_input = "../../data/mnist_split_images.npy"  # each input is a 28*28 image
 
     def create_dir(self):
 

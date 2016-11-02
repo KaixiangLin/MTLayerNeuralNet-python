@@ -5,7 +5,7 @@ import nn_utilities as nnu
 import math
 class NeuralNet:
 
-    def __init__(self, n_layer, n_nodes,n_feat, func_num):
+    def __init__(self, n_feat, func_num):
         ''' @:param: n_layer: number of layers
             @:param: n_nodes: list of numbers e.g. [1,2,3], if it's 3 layers and 1,2,3 hidden nodes respectively
             @:param: n_feat: the number of input features
@@ -15,9 +15,7 @@ class NeuralNet:
 
         self.train_acc = 0
         self.valid_acc = 0
-
-        self.n_layer = n_layer
-        self.n_nodes = n_nodes
+        self.n_layer = 2
         self.n_feat = n_feat
         self.func_num = func_num
         self.model = {}
@@ -25,14 +23,17 @@ class NeuralNet:
         self.z = {}  # input to the activation function
         self.grad_model = {}
 
-        #  todo didn't consider batch size, culmulate the batch size
-        self.model["w1"] = np.random.randn(n_nodes[0], n_feat) / np.sqrt(math.sqrt(float(n_feat)))
-        for i in range(n_layer-1):
-            self.model["w"+str(i+2)] = np.random.randn(n_nodes[i+1], n_nodes[i]) / np.sqrt(n_nodes[i]) # initialization
+        self.layer1_filter_size = 5
+        self.layer1_channel = 1
 
-        self.hidden["h1"] = np.zeros((self.n_feat, 1))
-        for i in range(n_layer):
-            self.hidden["h"+str(i+2)] = np.zeros((n_nodes[i], 1))
+        # convolution filter
+        self.model["w1"] = np.random.randn(self.layer1_filter_size, self.layer1_filter_size, self.layer1_channel) \
+                           / np.sqrt(math.sqrt(float(self.layer1_filter_size)))
+
+        # last layer
+        self.model["w2"] = np.random.randn(10, (self.n_feat - self.layer1_filter_size + 1) ** 2)
+
+        self.hidden["h2"] = np.zeros((self.n_feat - self.layer1_filter_size + 1, self.n_feat - self.layer1_filter_size + 1))
 
         self.grad_model = {k: np.zeros_like(v) for k, v in self.model.iteritems()}
 
@@ -49,23 +50,29 @@ class NeuralNet:
     def feedforward(self, x):
         ''' Define CNN network
 
-        :param x: input data
+        :param x: input data 28 * 28 image
         :return:
         '''
 
         self.hidden["h1"] = x  # output of activation function
         self.z["h1"] = x  # input of activation function
-        for i in range(2, self.n_layer+1):
-            self.z["h" + str(i)] = np.dot(self.model["w" + str(i-1)], self.hidden["h" + str(i-1)])
-            self.hidden["h" + str(i)] = self.activation(self.z["h" + str(i)])
 
-        self.z["h"+str(self.n_layer+1)] = np.dot(self.model["w" + str(self.n_layer)], self.hidden["h" + str(self.n_layer)])
-        self.hidden["h" + str(self.n_layer + 1)] = nnu.activate_softmax(self.z["h"+str(self.n_layer+1)])
+        # convolution layer
+        self.z["h2"] = nnu.convolution_tensor(self.hidden["h1"], self.model["w1"])   # output tensor after convo
+
+        # z1, z2, z3 = self.z["h2"].shape
+        self.hidden["h2"] = self.z["h2"].reshape(self.z["h2"].size, 1)
+
+        #soft max layer
+        self.z["h3"] = np.dot(self.model["w2"], self.hidden["h2"])
+        self.hidden["h3"] = nnu.activate_softmax(self.z["h"+str(self.n_layer+1)])
+
+
 
         return self.hidden["h"+str(self.n_layer+1)]  # return last hidden layer
 
 
-    def backprop(self,err):
+    def backprop(self, err):
         ''' back propagation
         :return: the gradient with respect to the error.
         '''
@@ -73,14 +80,13 @@ class NeuralNet:
         delta = {}
         # last layer gradient delta (error)
 
-        delta[str(self.n_layer+1)] = err # delta_4
+        delta[str(self.n_layer+1)] = err # delta_3
+        self.grad_model["w2"] = np.outer(delta["3"], self.hidden["h2"].T)
 
-        for ii in range(1, self.n_layer+1)[::-1]:
-
-            delta_w = np.dot(delta[str(ii+1)], self.model["w"+str(ii)])  # ii  = 2
-            delta[str(ii)] = np.multiply(delta_w, nnu.grad_activation(self.func_num, self.z["h" + str(ii)]))   # delta_3 3x1
-            self.grad_model["w"+str(ii)] = np.outer(delta[str(ii+1)], self.hidden["h"+str(ii)].T)
-
+        delta_w = np.dot(self.model["w2"].T, delta["3"])  # ii  = 2
+        delta["2"] = delta_w.reshape(self.z["h2"][:, :, 0].shape)  # delta_2  24x24
+        self.grad_model["w1"] = nnu.convolution_gradient(delta["2"], self.z["h1"])
+        
         return self.grad_model
 
     def loss_function_crossentropy(self, y_pred, y_true):
