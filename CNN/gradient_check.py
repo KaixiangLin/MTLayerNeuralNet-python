@@ -33,27 +33,16 @@ def nparray_to_dictionary(x, new_dictionary):
     start_point = 0
     endpoint = 0
     grad_dictionary = {}
+    keys = list(new_dictionary.keys())
+    layers = len(keys)
 
-    for k, v in new_dictionary.iteritems():
+    for ii in range(layers):
+        k = "w" + str(ii+1)
+        v = new_dictionary[k]
         endpoint = start_point + v.size
         grad_dictionary[k] = x[start_point:endpoint].reshape(v.shape)
         start_point = endpoint
 
-
-    # for ii in range(n_layers):
-    #     if ii == 0:
-    #         endpoint += n_feat * n_nodes[0]
-    #     else:
-    #         endpoint += n_nodes[ii] * n_nodes[ii-1]
-    #
-    #     xtemp = x[start_point:endpoint]
-    #
-    #     if ii == 0:
-    #         grad_dictionary["w" + str(ii + 1)] = xtemp.reshape(n_nodes[0], n_feat)
-    #     else:
-    #         grad_dictionary["w" + str(ii + 1)] = xtemp.reshape(n_nodes[ii], n_nodes[ii-1])
-    #
-    #     start_point = endpoint
 
     return grad_dictionary
 
@@ -142,7 +131,7 @@ def gradfunc(x0, X, y, nn_model):
 
 def run_main(features, labels):
 
-    max_iteration = 100
+    max_iteration = 10
     n_layer = 2  # the last layer is the output of network
     n_feat = 28
     n_nodes = 2
@@ -158,12 +147,6 @@ def run_main(features, labels):
 
 def main():
 
-    # read data
-    # fname = "../problem-4.mat"
-    # mat_contents = sio.loadmat(fname)
-    #
-    # dataset_tuple = tuple([mat_contents['x'], mat_contents['y']])
-    # features, labels = dataset_tuple
     features = np.random.randn(28, 28)
     # labels = np.array([random.randint(0, 1) for ii in range(100 * FLAGS.n_nodes[-1])]).reshape(100, FLAGS.n_nodes[-1])
     labels = abs(np.random.randn(10, 1))

@@ -18,14 +18,16 @@ def readdata():
     Read data from file and return train valid test data
     :return:
     """
+    print "generate new data"
     mattrain = sio.loadmat(FLAGS.inputdata_dir + FLAGS.inputdata_train)
 
     train_x = mattrain["images"]
     train_y = mattrain["labels"]
     train_datasize = len(train_y)
-    train_y_new = np.zeros((train_datasize, 10))
+    train_y_new = np.zeros((train_datasize, 10, 1))
     for i in range(train_datasize):
-        train_y_new[i][train_y[i][0]] = 1
+        train_y_new[i, train_y[i][0], 0] = 1
+
     train_y = train_y_new
     # train_x = np.array([train_x[ii].flatten() for ii in range(train_datasize)]) # 28*28 -> 1x784
     # train_x = pu.normalize_data(train_x)
@@ -38,13 +40,17 @@ def readdata():
     test_x = mattest["images"]
     test_y = mattest["labels"]
     test_datasize = len(test_y)
-    test_y_new = np.zeros((test_datasize, 10))
+    test_y_new = np.zeros((test_datasize, 10, 1))
     for i in range(test_datasize):
-        test_y_new[i][test_y[i][0]] = 1
+        test_y_new[i, test_y[i][0], 0] = 1
+
+
+    # print test_y[0:2],  test_y_new[0:2, :, 0]
     test_y = test_y_new
 
     # test_x = np.array([test_x[ii].flatten() for ii in range(test_datasize)])
     # test_x = pu.normalize_data(test_x)
+
 
     return tuple([train_x, train_y, valid_x, valid_y, test_x, test_y])
 
@@ -60,16 +66,16 @@ def run_main(datatuple):
     FLAGS.create_dir()
 
     # create network model
-    n_layer = FLAGS.n_layer  # the last layer is the output of network
-    n_feat = FLAGS.n_feat
-    n_nodes = FLAGS.n_nodes
 
     if os.path.isfile(FLAGS.nnmodel_load_fname):
         print "load model"
         nn_model = nnu.load_model(FLAGS.nnmodel_load_fname)
     else:
         print "random init model"
-        nn_model = NeuralNet(n_layer, n_nodes, n_feat, FLAGS.func_num)
+        nn_model = NeuralNet(FLAGS.n_feat, FLAGS.func_num,
+                             FLAGS.filter1_channel,
+                             FLAGS.filter2_channel,
+                             FLAGS.n_node_linear1_row)
 
     # save configuration
     configure_name = "configure.py"
@@ -132,8 +138,9 @@ def main():
     data_tuple = np.load(FLAGS.mnist_input)
     train_x, train_y, valid_x, valid_y, test_x, test_y = data_tuple
 
+    # print test_y.shape, test_y[0].shape
 
-    # run_main(data_tuple)
+    run_main(data_tuple)
 
 
     # hidden_layer_crossvalidation(data_tuple)

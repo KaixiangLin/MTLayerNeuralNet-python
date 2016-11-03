@@ -12,18 +12,22 @@ class myFLAGS:
         self.current_time = current_time
         print current_time
 
-        # # test gradient check
-        # self.n_feat = 2  # add bias term
-        # self.n_nodes = [3, 2]  # h2, h3, h4; where h1 is input x, h4 is output predicted value
-        # self.n_layer = len(self.n_nodes)
-
         '''Network structure parameters'''
-        self.n_feat = 784 + 1   # add bias term
-        self.n_nodes = [32, 10]  # h2, h3, h4; where h1 is input x, h4 is output predicted value
-        self.n_layer = len(self.n_nodes)
+        self.n_feat = 28    # add bias term
+        filter1_channel, filter2_channel, n_node_linear1_row = 32, 64, 200
+        # 32, 64, 200 # for test 2, 2, 20
+
+        self.maxpool_size = 2
+        self.filter1_size = 5
+        self.filter1_channel = filter1_channel  # todo should be 32    2
+        self.filter2_size = 5
+        self.filter2_channel = filter2_channel # todo should be 64   2
+
+        self.n_node_linear1_row = n_node_linear1_row # todo should be 200   20
+        # self.n_node_linear1_column = 1024  #4*4*64 todo testing should be 1024 = 4*4*64    32
 
         '''Optimizer parameters'''
-        self.Optimizer = 1 #1: SGD 2: "NesterovAcceleratedGrad" 3: AdamGrad 4 Adamdelta
+        self.Optimizer = 3 #1: SGD 2: "NesterovAcceleratedGrad" 3: AdamGrad 4 Adamdelta
         self.learning_rate = 1e-3
         self.Nesterov_alpha = 0.9
         self.adadelta_gamma = 0.9
@@ -39,11 +43,12 @@ class myFLAGS:
         '''Training parameters'''
         self.valid_rate = 1.0/6
         self.num_epoch = 1
-        self.func_num = 1  # 1 relu, 2 sigmoid, 3 tanh
-        self.batch_size = 128
-        self.max_iteration = int(1e+4 + 1) # int(self.data_size * self.num_epoch / self.batch_size)
-        self.record_persteps = 1000  # every x steps records the models
-        self.nnmodel_load_fname = "../results/20161030_23-11/NA"
+        self.func_num = 3  # 1 relu, 2 sigmoid, 3 tanh
+        self.batch_size = 2
+        self.max_iteration = int(5e+3 + 1) # int(self.data_size * self.num_epoch / self.batch_size)
+        self.record_persteps = 1000 # every x steps records the models
+        self.batch_size_evaluate = 10000
+        self.nnmodel_load_fname = "../results/20161102_21-10/Adam_1999.npy"
         self.mnist_input = "../../data/mnist_split_images.npy"  # each input is a 28*28 image
 
     def create_dir(self):
