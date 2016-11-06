@@ -85,7 +85,7 @@ def convolution_tensor(image, filtertensor):
     L = N - M + 1
     H = np.zeros((L, L, C))
     for ii in range(C):
-        H[:, :, ii] = conv(image, filtertensor[:, :, ii])
+        H[:, :, ii] = conv(image, np.rot90(filtertensor[:, :, ii],2))
 
     return H
 
@@ -148,7 +148,7 @@ def max_pooling(tensor, m):
     return tensor_new, tensor_pos
 
 def convolution_backprop(error_tensor, filter):
-    """ bp the error back, the channle of error tensor and filter should be same
+    """ bp the error back, the channel of error tensor and filter should be same
     :param errr_tensor: 8x8, 64
     :param filter: 5x5, 64
     :return:

@@ -4,22 +4,8 @@ import nn_train
 import ConvoNN as nn
 from configure import FLAGS
 import random
+import nn_utilities as nnu
 
-def dict_to_nparray(grad_dictionary):
-    """ Convert dictionary to a numpy array checked
-
-    :param grad_dictionary:
-    :param n_nodes:
-    :return:
-    """
-
-    x = []
-    for ii in range(FLAGS.n_layer):
-        key = "w" + str(ii + 1)
-        temp_v = grad_dictionary[key].flatten()
-        x = np.concatenate((x, temp_v), axis=0)
-
-    return x
 
 def nparray_to_dictionary(x, new_dictionary):
     """ Convert a numpy array to a dictionary, same structure as new_dictionary
@@ -62,7 +48,7 @@ def gradientCheck(gradfunc, objfunc, x0, X, y,  num_checks, nn_model):
     for ii in range(num_checks):
         delta = 0
 
-        J = np.random.choice(range(len(x0)))   # choose a specific variable to check its gradient
+        J = np.random.choice(range(100))   # choose a specific variable to check its gradient len(x0)
         delta = np.random.randn(1)[0] * epsilon
         x1 = np.copy(x0)
         x2 = np.copy(x0)
@@ -99,7 +85,7 @@ def objfunc(x1, X, y, nn_model):
     :param nn_model: instance of neural network class
     :return:
     """
-    model_w = nparray_to_dictionary(x1, nn_model.model)
+    model_w = nnu.nparray_to_dictionary(x1, nn_model.model)
     nn_model.model = model_w
 
     f = nn_train.evaluate_loss(X, y, nn_model)
@@ -123,7 +109,7 @@ def gradfunc(x0, X, y, nn_model):
         y_true = y[ii]
         err = nn_model.loss_function_crossentropy_grad(y_pred, y_true)
         grad_delta = nn_model.backprop(err)
-        w_temp = dict_to_nparray(grad_delta)
+        w_temp = nnu.dict_to_nparray(grad_delta)
         w_new += w_temp
 
     return w_new
@@ -136,11 +122,11 @@ def run_main(features, labels):
     n_feat = 28
     n_nodes = 2
 
-    nn_model = nn.NeuralNet(n_feat, 1)
+    nn_model = nn.NeuralNet(28, 1, 2, 2, 20)
     # datatuple = tuple([features, labels, [], [], [], []])
     # nn_train.StochasticGradientDescent(datatuple, nn_model)
 
-    w0 = dict_to_nparray(nn_model.model)
+    w0 = nnu.dict_to_nparray(nn_model.model)
 
     print gradientCheck(gradfunc, objfunc, w0, [features], [labels], max_iteration, nn_model)
     # print features, labels

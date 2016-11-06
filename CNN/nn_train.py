@@ -264,10 +264,9 @@ def Adamdelta(datatuple, nn_model, gamma):
         temp_dict = nnu.nparray_to_dictionary(delta_theta, nn_model.model) # converet np array to dictionary
         nn_model.model = nnu.dict_add(nn_model.model, temp_dict)
 
-        if i % 100 == 0:
-            print i
+
         if (i +1) % FLAGS.record_persteps == 0:
-            # bx, by = nnu.batch_data(train_x, train_y, FLAGS.batch_size_evaluate)
+            bx, by = nnu.batch_data(train_x, train_y, FLAGS.batch_size_evaluate)
             # train_acc = evaluate_accuracy(bx, by, nn_model)
             # train_accs.append(train_acc)
             # valid_acc = evaluate_accuracy(valid_x, valid_y, nn_model)
@@ -275,7 +274,8 @@ def Adamdelta(datatuple, nn_model, gamma):
             # print "step ", i, " training acc: ", train_acc, " valid acc:", valid_acc
             # loss_val.append(evaluate_loss(train_x, train_y, nn_model))
             nnu.save_model(nn_model, FLAGS.model_dir + "Adamdelta_" + str(i) + ".npy")
-            test_acc = evaluate_accuracy(test_x, test_y, nn_model)
+            testbx, testby = nnu.batch_data(test_x, test_y, FLAGS.batch_size_evaluate)
+            test_acc = evaluate_accuracy(testbx, testby, nn_model)
             test_accs.append(test_acc)
             print test_accs
             # nnu.plot_list_acc(train_accs, valid_accs, FLAGS.fig_dir + "Adamdelta_accs.png")

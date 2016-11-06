@@ -27,7 +27,7 @@ class myFLAGS:
         # self.n_node_linear1_column = 1024  #4*4*64 todo testing should be 1024 = 4*4*64    32
 
         '''Optimizer parameters'''
-        self.Optimizer = 3 #1: SGD 2: "NesterovAcceleratedGrad" 3: AdamGrad 4 Adamdelta
+        self.Optimizer = 4 #1: SGD 2: "NesterovAcceleratedGrad" 3: AdamGrad 4 Adamdelta
         self.learning_rate = 1e-3
         self.Nesterov_alpha = 0.9
         self.adadelta_gamma = 0.9
@@ -44,11 +44,11 @@ class myFLAGS:
         self.valid_rate = 1.0/6
         self.num_epoch = 1
         self.func_num = 3  # 1 relu, 2 sigmoid, 3 tanh
-        self.batch_size = 2
+        self.batch_size = 128
         self.max_iteration = int(5e+3 + 1) # int(self.data_size * self.num_epoch / self.batch_size)
         self.record_persteps = 1000 # every x steps records the models
-        self.batch_size_evaluate = 10000
-        self.nnmodel_load_fname = "../results/20161102_21-10/Adam_1999.npy"
+        self.batch_size_evaluate = 1000
+        self.nnmodel_load_fname = "../results/20161106_09-39/Adamdelta_189.npy"
         self.mnist_input = "../../data/mnist_split_images.npy"  # each input is a 28*28 image
 
     def create_dir(self):
